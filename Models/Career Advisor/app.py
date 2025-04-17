@@ -13,8 +13,8 @@ df = pd.read_csv("data/career_path_in_all_field.csv")
 
 # --- Step 2: Define Features and Target ---
 # "Career" is the target variable.
-X = df.drop("Career", axis=1)
-y = df["Career"]
+X = df.drop("Career", axis=1)    # X = the input features we know (e.g., GPA, internships, skills, etc.)
+y = df["Career"]                 # y = the output we want to predict (in this case, the 'Career' field)
 
 # Encode the target variable ("Career") using LabelEncoder.
 le = LabelEncoder()
