@@ -34,8 +34,10 @@ categorical_features = ["Field"]
 # Create a ColumnTransformer to scale numeric features and one-hot encode categorical features.
 preprocessor = ColumnTransformer(
     transformers=[
-        ("num", StandardScaler(), numeric_features),
-        ("cat", OneHotEncoder(handle_unknown="ignore"), categorical_features)
+        ("num", StandardScaler(), numeric_features),                            #It puts all numeric features on the same scale, 
+                                                                                # so one feature (like GPA) doesn’t dominate others just because of a bigger range.
+        ("cat", OneHotEncoder(handle_unknown="ignore"), categorical_features)   #Each category gets its own binary column. Machine learning models like RandomForestClassifier can’t directly handle text 
+                                                                                #they need numbers, and one-hot encoding makes categories understandable for the model.
     ]
 )
 
@@ -67,7 +69,7 @@ cv_scores = cross_val_score(pipeline, X_train, y_train, cv=skf, scoring="accurac
 print("Stratified Cross-validation Accuracy Scores:", cv_scores)
 print("Average Stratified Cross-validation Accuracy:", cv_scores.mean())
 
-# --- Step 9: Export the Model ---
+# --- Step 9: Export the Model --- # These can be loaded later for making predictions without retraining the model using joblib.
 # Save the trained pipeline and the LabelEncoder for later use.
 joblib.dump(pipeline, "carrer_model.pkl")
 joblib.dump(le, "career_label_encoder.pkl")
