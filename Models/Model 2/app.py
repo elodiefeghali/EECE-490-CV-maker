@@ -13,4 +13,14 @@ df = pd.read_csv(file_path)
 X = df[['Location', 'Experience Level', 'Salary', 'Industry', 'Required Skills']]
 y = df['Job Title']
 
+# Step 3: Preprocess the data
+# Identify categorical and numeric features
+numeric_features = ['Salary']
+categorical_features = ['Location', 'Experience Level', 'Industry', 'Required Skills']
 
+# Create a ColumnTransformer for preprocessing
+preprocessor = ColumnTransformer(
+    transformers=[
+        ('num', StandardScaler(), numeric_features),
+        ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_features)
+    ])
