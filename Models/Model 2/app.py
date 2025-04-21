@@ -2,6 +2,7 @@ import os
 import re
 import joblib
 import numpy as np
+import pandas as pd
 from sklearn.datasets import load_files
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
