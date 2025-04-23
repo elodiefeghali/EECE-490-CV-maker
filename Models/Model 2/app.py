@@ -25,3 +25,21 @@ preprocessor = ColumnTransformer(
         ('num', StandardScaler(), numeric_features),
         ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_features)
     ])
+# Step 4: Build the pipeline and set up GridSearchCV
+pipeline = Pipeline(steps=[
+    ('preprocessor', preprocessor),
+    ('classifier', LogisticRegression(max_iter=200, random_state=42))
+])
+
+# Set up the hyperparameter grid for tuning
+param_grid = {
+    'classifier__C': [0.1, 1, 10],  # Regularization strength
+    'classifier__solver': ['liblinear', 'saga'],  # Solvers for logistic regression
+    'classifier__penalty': ['l2', 'elasticnet']  # Regularization penalties
+}
+
+# Split the data into training and testing sets (80/20)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Set up GridSearchCV for hyperparameter tuning
+grid_search = GridSearchCV(pipeline, param_grid, cv=5, n_jobs=-1, scoring='accuracy')
