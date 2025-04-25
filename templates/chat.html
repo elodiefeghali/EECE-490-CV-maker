@@ -1,0 +1,120 @@
+{% extends "base.html" %} {% block title %}AI CV Builder{% endblock %} {% block
+content %}
+<div class="main-container">
+  <h2 class="text-center mb-4">
+    <i class="fas fa-robot me-2"></i>AI CV Builder
+  </h2>
+
+  <!-- Progress Bar -->
+  <div class="progress">
+    <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+  </div>
+
+  <div id="chat-box" class="mb-3"></div>
+
+  <div class="input-group">
+    <input
+      type="text"
+      id="user-input"
+      class="form-control"
+      placeholder="Type your answer..."
+      autofocus
+    />
+    <button class="btn btn-primary" onclick="sendAnswer()">
+      <i class="fas fa-paper-plane me-1"></i>Send
+    </button>
+  </div>
+
+  <div id="download-section" style="display: none">
+    <a href="/generate" class="btn btn-success btn-lg">
+      <i class="fas fa-download me-2"></i>Download Your CV
+    </a>
+  </div>
+</div>
+{% endblock %} {% block scripts %}
+<script>
+  const chatBox = document.getElementById("chat-box");
+  const progressBar = document.querySelector(".progress-bar");
+  let totalSteps = 12; // Updated total number of steps
+  let currentStep = 0;
+
+  function updateProgress() {
+    currentStep++;
+    const progress = (currentStep / totalSteps) * 100;
+    progressBar.style.width = `${progress}%`;
+
+    // Update progress bar color based on progress
+    if (progress < 33) {
+      progressBar.style.backgroundColor = "#dc3545"; // Red
+    } else if (progress < 66) {
+      progressBar.style.backgroundColor = "#ffc107"; // Yellow
+    } else {
+      progressBar.style.backgroundColor = "#198754"; // Green
+    }
+  }
+
+  function appendMessage(message, sender) {
+    const div = document.createElement("div");
+    div.className = `message ${sender === "Bot" ? "bot" : "user"}`;
+
+    // Format message with line breaks and bullet points
+    const formattedMessage = message.replace(/\n/g, "<br>");
+
+    div.innerHTML = `<i class="fas ${
+      sender === "Bot" ? "fa-robot" : "fa-user"
+    } me-2"></i>${formattedMessage}`;
+
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  async function sendAnswer() {
+    const input = document.getElementById("user-input");
+    const answer = input.value.trim();
+    if (!answer) return;
+
+    appendMessage(answer, "You");
+    input.value = "";
+
+    const res = await fetch("/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ answer }),
+    });
+
+    const data = await res.json();
+
+    if (data.done) {
+      appendMessage("🎉 Great! Your CV is being generated...", "Bot");
+      appendMessage(
+        "💡 Tips for your CV:\n- Keep your information clear and concise\n- Use bullet points for achievements\n- Include specific numbers and results where possible\n- Proofread your information carefully",
+        "Bot"
+      );
+      document.getElementById("download-section").style.display = "block";
+    } else {
+      appendMessage(data.question, "Bot");
+      updateProgress();
+    }
+  }
+
+  // Handle Enter key
+  document
+    .getElementById("user-input")
+    .addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        sendAnswer();
+      }
+    });
+
+  // Load the first question
+  window.onload = () => {
+    const firstQuestion = "{{ question }}";
+    appendMessage(
+      "👋 Welcome to the AI CV Builder! I'll help you create a professional CV by asking you some questions. Let's get started!",
+      "Bot"
+    );
+    appendMessage(firstQuestion, "Bot");
+    updateProgress();
+  };
+</script>
+{% endblock %}

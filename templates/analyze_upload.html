@@ -1,0 +1,123 @@
+{% extends "base.html" %} {% block title %}Analyze CV{% endblock %} {% block
+content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card shadow">
+        <div class="card-body">
+          <h2 class="mb-4">Analyze Your CV</h2>
+          <p class="text-muted mb-4">
+            Upload your CV file DOCX for AI-powered analysis.
+          </p>
+
+          <form method="POST" enctype="multipart/form-data" class="mb-4">
+            <div class="mb-3">
+              <label for="cv_file" class="form-label">Select CV File</label>
+              <input
+                type="file"
+                class="form-control"
+                id="cv_file"
+                name="cv_file"
+                accept=".docx"
+                required
+              />
+              <div class="form-text">
+                Supported formats: DOCX(Max size: 16MB)
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-chart-bar me-1"></i>Analyze CV
+            </button>
+          </form>
+
+          {% if analysis %}
+          <div class="analysis-content mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h3>Analysis Results</h3>
+              <a
+                href="{{ url_for('fix_uploaded_cv') }}"
+                class="btn btn-success btn-lg"
+              >
+                <i class="fas fa-magic me-2"></i>Apply All Improvements
+              </a>
+            </div>
+            {% set sections = analysis.split('\n\n') %} {% for section in
+            sections %} {% if section.strip() %} {% if "Recommendations for
+            Enhancement" in section %}
+            <div class="recommendations-section mb-4">
+              <h4 class="text-primary mb-3">Recommended Improvements</h4>
+              <div class="recommendations-list">
+                {% for line in section.split('\n') %} {% if line.strip() %} {%
+                if line.startswith('- ') %}
+                <div class="analysis-bullet">{{ line[2:] }}</div>
+                {% else %}
+                <div class="analysis-text">{{ line }}</div>
+                {% endif %} {% endif %} {% endfor %}
+              </div>
+            </div>
+            {% else %}
+            <div class="mb-4">
+              {% for line in section.split('\n') %} {% if line.strip() %} {% if
+              line.startswith('- ') %}
+              <div class="analysis-bullet">{{ line[2:] }}</div>
+              {% else %}
+              <div class="analysis-text">{{ line }}</div>
+              {% endif %} {% endif %} {% endfor %}
+            </div>
+            {% endif %} {% endif %} {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .analysis-content {
+    line-height: 1.6;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+  }
+  .analysis-text {
+    margin-bottom: 0.5rem;
+  }
+  .analysis-bullet {
+    margin-bottom: 0.5rem;
+    padding-left: 1.5rem;
+    position: relative;
+  }
+  .analysis-bullet::before {
+    content: "•";
+    position: absolute;
+    left: 0.5rem;
+    color: #2c3e50;
+  }
+  .recommendations-section {
+    background-color: #e8f5e9;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #2ecc71;
+  }
+  .recommendations-list {
+    margin-bottom: 20px;
+  }
+  .btn-success {
+    background-color: #2ecc71;
+    border-color: #2ecc71;
+    padding: 12px 24px;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(46, 204, 113, 0.2);
+  }
+  .btn-success:hover {
+    background-color: #27ae60;
+    border-color: #27ae60;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(46, 204, 113, 0.3);
+  }
+  .text-primary {
+    color: #2c3e50 !important;
+  }
+</style>
+{% endblock %}

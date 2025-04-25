@@ -1,0 +1,94 @@
+{% extends "base.html" %} {% block title %}CV Analysis{% endblock %} {% block
+content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card shadow">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>CV Analysis</h2>
+            <a
+              href="{{ url_for('fix_cv_issues', cv_id=cv.id) }}"
+              class="btn btn-success btn-lg"
+            >
+              <i class="fas fa-magic me-2"></i>Apply All Improvements
+            </a>
+          </div>
+          <p class="text-muted mb-4">
+            Analysis generated on {{ cv.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            }}
+          </p>
+
+          <div class="analysis-content">
+            {% set sections = analysis.split('\n\n') %} {% for section in
+            sections %} {% if section.strip() %} {% if "Recommendations for
+            Enhancement" in section %}
+            <div class="recommendations-section mb-4">
+              <h4 class="text-primary mb-3">Recommended Improvements</h4>
+              <div class="recommendations-list">
+                {{ section | replace('\n', '<br />') | safe }}
+              </div>
+            </div>
+            {% else %}
+            <div class="mb-4">
+              {{ section | replace('\n', '<br />') | safe }}
+            </div>
+            {% endif %} {% endif %} {% endfor %}
+          </div>
+
+          <div class="mt-4 d-flex justify-content-between align-items-center">
+            <a href="{{ url_for('profile') }}" class="btn btn-secondary">
+              <i class="fas fa-arrow-left me-1"></i>Back to Profile
+            </a>
+            <div>
+              <a
+                href="{{ url_for('generate_cv', cv_id=cv.id) }}"
+                class="btn btn-primary me-2"
+              >
+                <i class="fas fa-download me-1"></i>Download Current CV
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .analysis-content {
+    line-height: 1.6;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+  }
+  .analysis-content strong {
+    color: #2c3e50;
+  }
+  .recommendations-section {
+    background-color: #e8f5e9;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #2ecc71;
+  }
+  .recommendations-list {
+    margin-bottom: 20px;
+  }
+  .btn-success {
+    background-color: #2ecc71;
+    border-color: #2ecc71;
+    padding: 12px 24px;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(46, 204, 113, 0.2);
+  }
+  .btn-success:hover {
+    background-color: #27ae60;
+    border-color: #27ae60;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(46, 204, 113, 0.3);
+  }
+  .text-primary {
+    color: #2c3e50 !important;
+  }
+</style>
+{% endblock %}
