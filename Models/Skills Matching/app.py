@@ -1,45 +1,117 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.compose import ColumnTransformer
+import numpy as np
+import re
+from sklearn.model_selection import train_test_split, GridSearchCV, StratifiedKFold
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import LabelEncoder
+from sklearn.feature_selection import SelectKBest, chi2
 from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier, VotingClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
 from sklearn.metrics import classification_report
+import joblib
 
-# Step 1: Load the dataset
-file_path = '/mnt/data/job_recommendation_dataset 3.csv'
-df = pd.read_csv(file_path)
+# ---------------------------------------------
+# 1. Load and Clean Dataset
+# ---------------------------------------------
+df = pd.read_csv("data/resumes.csv")
+df['cleaned_resume'] = df['cleaned_resume'].fillna('')
 
-# Step 2: Define features and target variable
-X = df[['Location', 'Experience Level', 'Salary', 'Industry', 'Required Skills']]
-y = df['Job Title']
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r'[^a-zA-Z0-9, ]', '', text)
+    return text
 
-# Step 3: Preprocess the data
-# Identify categorical and numeric features
-numeric_features = ['Salary']
-categorical_features = ['Location', 'Experience Level', 'Industry', 'Required Skills']
+X_cleaned = df['cleaned_resume'].apply(clean_text)
+y_raw = df['Category']
 
-# Create a ColumnTransformer for preprocessing
-preprocessor = ColumnTransformer(
-    transformers=[
-        ('num', StandardScaler(), numeric_features),
-        ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_features)
-    ])
-# Step 4: Build the pipeline and set up GridSearchCV
-pipeline = Pipeline(steps=[
-    ('preprocessor', preprocessor),
-    ('classifier', LogisticRegression(max_iter=200, random_state=42))
+# ---------------------------------------------
+# 2. Label Encode Targets
+# ---------------------------------------------
+le = LabelEncoder()
+y = le.fit_transform(y_raw)
+
+# ---------------------------------------------
+# 3. Split Data
+# ---------------------------------------------
+X_train, X_test, y_train, y_test = train_test_split(
+    X_cleaned, y, test_size=0.2, stratify=y, random_state=42
+)
+
+# ---------------------------------------------
+# 4. Tokenizer Function (No Lambda!)
+# ---------------------------------------------
+def skill_tokenizer(text):
+    return text.split(', ')
+
+# ---------------------------------------------
+# 5. Model Pipeline + Tuning Setup
+# ---------------------------------------------
+vectorizer = TfidfVectorizer(
+    tokenizer=skill_tokenizer,
+    stop_words='english',
+    ngram_range=(1, 2),
+    max_df=0.9
+)
+
+feature_selector = SelectKBest(score_func=chi2, k=1000)
+
+logreg = LogisticRegression(max_iter=2000)
+rf = RandomForestClassifier(n_estimators=200)
+knn = KNeighborsClassifier(metric='cosine')
+svm = SVC(probability=True)
+
+ensemble = VotingClassifier(estimators=[
+    ('lr', logreg),
+    ('rf', rf),
+    ('knn', knn),
+    ('svm', svm)
+], voting='soft')
+
+pipeline = Pipeline([
+    ('tfidf', vectorizer),
+    ('select', feature_selector),
+    ('clf', ensemble)
 ])
 
-# Set up the hyperparameter grid for tuning
 param_grid = {
-    'classifier__C': [0.1, 1, 10],  # Regularization strength
-    'classifier__solver': ['liblinear', 'saga'],  # Solvers for logistic regression
-    'classifier__penalty': ['l2', 'elasticnet']  # Regularization penalties
+    'select__k': [500, 1000],
+    'clf__rf__max_depth': [10, 20],
+    'clf__lr__C': [0.1, 1, 10],
+    'clf__knn__n_neighbors': [3, 5]
 }
 
-# Split the data into training and testing sets (80/20)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
-# Set up GridSearchCV for hyperparameter tuning
-grid_search = GridSearchCV(pipeline, param_grid, cv=5, n_jobs=-1, scoring='accuracy')
+# ---------------------------------------------
+# 6. Train and Tune
+# ---------------------------------------------
+print("🚀 Starting Grid Search...")
+grid = GridSearchCV(pipeline, param_grid, cv=cv, scoring='accuracy', n_jobs=-1, verbose=2)
+grid.fit(X_train, y_train)
+
+# ---------------------------------------------
+# 7. Evaluate on Test Set
+# ---------------------------------------------
+y_pred = grid.best_estimator_.predict(X_test)
+print("\n✅ Classification Report:")
+print(classification_report(y_test, y_pred, target_names=le.classes_))
+
+# ---------------------------------------------
+# 8. Save Model and Encoder
+# ---------------------------------------------
+joblib.dump(grid.best_estimator_, 'career_classifier_advanced.pkl')
+joblib.dump(le, 'label_encoder.pkl')
+print("✅ Model and encoder saved to disk!")
+
+# ---------------------------------------------
+# 9. Function for Future Use
+# ---------------------------------------------
+def predict_career_from_text(resume_text: str) -> str:
+    model = joblib.load('career_classifier_advanced.pkl')
+    label_enc = joblib.load('label_encoder.pkl')
+    cleaned = clean_text(resume_text)
+    prediction = model.predict([cleaned])
+    return label_enc.inverse_transform(prediction)[0]
