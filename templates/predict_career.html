@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Predict Career{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Predict Your Ideal Career</h1>
+
+    <form method="POST" class="row g-3">
+        {% for name, label, placeholder in [
+            ("GPA", "GPA", "e.g. 3.5"),
+            ("Extracurricular_Activities", "Extracurricular Activities", "e.g. 2"),
+            ("Internships", "Internships", "e.g. 1"),
+            ("Projects", "Projects", "e.g. 3"),
+            ("Leadership_Positions", "Leadership Positions", "e.g. 1"),
+            ("Field_Specific_Courses", "Field Specific Courses", "e.g. 5"),
+            ("Research_Experience", "Research Experience", "e.g. 0"),
+            ("Coding_Skills", "Coding Skills (1–10)", "e.g. 8"),
+            ("Communication_Skills", "Communication Skills (1–10)", "e.g. 7"),
+            ("Problem_Solving_Skills", "Problem Solving Skills (1–10)", "e.g. 9"),
+            ("Teamwork_Skills", "Teamwork Skills (1–10)", "e.g. 6"),
+            ("Analytical_Skills", "Analytical Skills (1–10)", "e.g. 8"),
+            ("Presentation_Skills", "Presentation Skills (1–10)", "e.g. 7"),
+            ("Networking_Skills", "Networking Skills (1–10)", "e.g. 6"),
+            ("Industry_Certifications", "Industry Certifications", "e.g. 1")
+        ] %}
+        <div class="col-md-6">
+            <label for="{{ name }}" class="form-label">{{ label }}</label>
+            <input type="number" step="any" class="form-control" id="{{ name }}" name="{{ name }}" placeholder="{{ placeholder }}" required>
+        </div>
+        {% endfor %}
+
+        <div class="col-md-6">
+            <label for="Field" class="form-label">Field</label>
+            <input type="text" class="form-control" id="Field" name="Field" placeholder="e.g. Computer Science" required>
+        </div>
+
+        <div class="col-12 mt-4">
+            <button type="submit" class="btn btn-primary">Predict Career</button>
+        </div>
+    </form>
+
+    {% if prediction %}
+        <div class="alert alert-success mt-4">
+            <h4 class="alert-heading">Recommended Career:</h4>
+            <p>{{ prediction }}</p>
+        </div>
+    {% endif %}
+{% endblock %}
