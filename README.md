@@ -47,7 +47,8 @@ Step 6: Hyperparameter Tuning
   `select__k ∈ {500, 1000}`  `lr__C ∈ {0.1, 1, 10}`  
   `rf__max_depth ∈ {10, 20}` `knn__n_neighbors ∈ {3, 5}`  
 - Employs `StratifiedKFold(n_splits = 5)` so every fold preserves class balance.
-- Best configuration selected:  `k = 1000`, `C = 1`, `max_depth = 20`, `n_neighbors = 5`.  
+- Best configuration selected:  `k = 1000`, `C = 1`, `max_depth = 20`, `n_neighbors = 5`.
+
 Hyperparameter tuning is essential for squeezing maximum predictive power from our models, and GridSearchCV gives us a principled, repeatable way to do that without manual guess-and-check tuning. GridSearchCV systematically tries every candidate combination and scores each with cross-validation, giving an unbiased estimate of generalisation.
 
 Step 7: Persist the model 
