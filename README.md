@@ -87,6 +87,9 @@ Saves the tuned pipeline as `career_classifier_advanced.pkl` and the `LabelEncod
 
 Outcome: A fast, 93 %-accurate resume classifier that marries classic TF-IDF text features with an ensemble of tuned algorithms, ready for deployment in a Flask or FastAPI service to recommend career paths at scale.
 
+Future Improvements
+We plan to revisit the job matching feature in the future once we have access to the necessary resources, such as a reliable job dataset or API. This feature will enhance the platform by providing users with more accurate and personalized job recommendations based on their skills and experience, further improving their career development journey.
+
 
 
 
