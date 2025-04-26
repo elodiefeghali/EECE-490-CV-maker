@@ -91,7 +91,7 @@ Future Improvements
 We plan to revisit the job matching feature in the future once we have access to the necessary resources, such as a reliable job dataset or API. This feature will enhance the platform by providing users with more accurate and personalized job recommendations based on their skills and experience, further improving their career development journey.
 
 
-
+Google drive link: https://drive.google.com/drive/folders/1gzwaywwUhl_27op2vBN_Sv2FWJ8j6R8N?usp=sharing
 
 
 
