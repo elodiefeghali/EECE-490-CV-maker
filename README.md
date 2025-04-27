@@ -56,6 +56,45 @@ We plan to revisit the job matching feature in the future once we have access to
 
 Google drive link: https://drive.google.com/drive/folders/1gzwaywwUhl_27op2vBN_Sv2FWJ8j6R8N?usp=sharing
 
+**Running the CV Maker Application**:
+**Direct Method**
+Prerequisites:
+
+Python 3.8 or higher
+Required Python packages (listed in requirements.txt)
+Valid OpenAI API key
+Downloaded model files from Google Drive
+
+Steps:
+
+1. Clone or download the repository
+   git clone [https://github.com/elodiefeghali/EECE-490-CV-maker]
+  cd cv-maker
+
+2. Install dependencies
+  pip install -r requirements.txt
+
+3. Create necessary directories:
+  mkdir -p static/temp static/cvs
+
+4. Ensure model files are in the correct location
+  Copy the model files from Google Drive to these locations:
+  
+  Models/Career Advisor/carrer_model.pkl
+  Models/Career Advisor/career_label_encoder.pkl
+  Models/Skills Matching/career_classifier_advanced.pkl
+  Models/Skills Matching/label_encoder.pkl
+
+5. Run the application
+   python app.py
+
+6. Access the application
+  Open your browser and navigate to http://localhost:5001
+
+We tried to dockerize the project but encountered many problems:
+First the building process was so long we spent 3 days trying to solve the errors, then when the build was successful we encountered a module not found error and tried to install the compatible versions but that didn't work and gave us more errors during the rebuilding process. 
+
+
 
 
 
