@@ -68,16 +68,20 @@ Downloaded model files from Google Drive
 Steps:
 
 1. Clone or download the repository
+   
    git clone [https://github.com/elodiefeghali/EECE-490-CV-maker]
-  cd cv-maker
+   cd cv-maker
 
-2. Install dependencies
+3. Install dependencies
+   
   pip install -r requirements.txt
 
-3. Create necessary directories:
+5. Create necessary directories:
+   
   mkdir -p static/temp static/cvs
 
-4. Ensure model files are in the correct location
+7. Ensure model files are in the correct location
+   
   Copy the model files from Google Drive to these locations:
   
   Models/Career Advisor/carrer_model.pkl
@@ -86,9 +90,11 @@ Steps:
   Models/Skills Matching/label_encoder.pkl
 
 5. Run the application
+   
    python app.py
 
-6. Access the application
+7. Access the application
+   
   Open your browser and navigate to http://localhost:5001
 
 We tried to dockerize the project but encountered many problems:
@@ -96,17 +102,26 @@ First the building process was so long we spent 3 days trying to solve the error
 
 **Docker Setup (Alternative)**:
 1. Build the Docker image
+   
    docker build -t cv-maker-app .
-2. Run the container (without OpenAI key)
+3. Run the container 
+   
    docker run -d -p 5001:5001 --name cv-maker cv-maker-app
-3. Access the application
+5. Access the application
+   
    Open your browser and navigate to http://localhost:5001
-4. If you encounter SciPy issues
+7. If you encounter SciPy issues
+   
    If you see errors related to scipy.sparse._csr or other SciPy components, you may need to fix the dependencies inside the container:
-   docker exec -it cv-maker bash
+
+   docker exec -it cv-maker
+   
    pip uninstall -y scikit-learn scipy
+   
    pip install scikit-learn==1.0.2 scipy==1.7.3
+   
    exit
+   
    docker restart cv-maker
 
 
