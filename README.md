@@ -92,9 +92,22 @@ Steps:
   Open your browser and navigate to http://localhost:5001
 
 We tried to dockerize the project but encountered many problems:
-First the building process was so long we spent 3 days trying to solve the errors, then when the build was successful we encountered a module not found error and tried to install the compatible versions but that didn't work and gave us more errors during the rebuilding process. 
+First the building process was so long we spent 3 days trying to solve the errors, then when the build was successful we encountered a module not found error (scipy.sparse._csr) and tried to install the compatible versions but that didn't work and gave us more errors during the rebuilding process. The error might be related to our system configuration or python version that's why we attached the dockerfile in case you want to make sure it's working. Thank you for your consideration and we apoligize for the late docker submission.
 
-
+**Docker Setup (Alternative)**:
+1. Build the Docker image
+   docker build -t cv-maker-app .
+2. Run the container (without OpenAI key)
+   docker run -d -p 5001:5001 --name cv-maker cv-maker-app
+3. Access the application
+   Open your browser and navigate to http://localhost:5001
+4. If you encounter SciPy issues
+   If you see errors related to scipy.sparse._csr or other SciPy components, you may need to fix the dependencies inside the container:
+   docker exec -it cv-maker bash
+   pip uninstall -y scikit-learn scipy
+   pip install scikit-learn==1.0.2 scipy==1.7.3
+   exit
+   docker restart cv-maker
 
 
 
