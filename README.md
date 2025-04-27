@@ -69,7 +69,7 @@ Steps:
 
 1. Clone or download the repository
    
-   git clone [https://github.com/elodiefeghali/EECE-490-CV-maker]
+   git clone https://github.com/elodiefeghali/EECE-490-CV-maker
    cd cv-maker
 
 3. Install dependencies
