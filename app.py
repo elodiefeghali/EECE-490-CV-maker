@@ -95,8 +95,7 @@ def too_large(error):
 # ------------------------------
 # OpenAI API Key (replace with your key)
 # ------------------------------
-openai.api_key = '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'
-
+openai.api_key = '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'
 # ------------------------------
 # CV Chat & Generation Steps (existing functionality)
 # ------------------------------
